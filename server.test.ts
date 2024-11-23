@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { env } from './env'
 import { app } from './server'
+import { Server } from 'http'
 
 let origin = `http://localhost:${env.PORT}`
 
@@ -10,9 +11,20 @@ async function get(url: string) {
   return { res, json }
 }
 
+let server: Server
+
 before(async () => {
   return new Promise((resolve, reject) => {
-    app.listen(env.PORT, resolve).on('error', reject)
+    server = app.listen(env.PORT, resolve).on('error', reject)
+  })
+})
+
+after(async () => {
+  return new Promise((resolve, reject) => {
+    server.close(error => {
+      if (error) reject(error)
+      else resolve()
+    })
   })
 })
 
